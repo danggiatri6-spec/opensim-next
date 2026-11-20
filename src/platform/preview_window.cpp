@@ -79,7 +79,7 @@ void renderWorldItems(std::span<const renderer::DrawItem> items,
                   .35F+(hash&255U)/510.0F);
         if (item.geometry) {
             if (!meshes.draw(item.mesh)) {
-                std::cerr << "Unable to draw GPU mesh handle " << item.mesh.value << '\\n';
+                std::cerr << "Unable to draw GPU mesh handle " << item.mesh.value << '\n';
             }
         } else {
             drawUnitCube();
@@ -92,7 +92,7 @@ void renderWorldItems(std::span<const renderer::DrawItem> items,
 int PreviewWindow::run(std::span<const renderer::DrawItem> items,
                        renderer::CameraController& camera) const {
     if(!SDL_Init(SDL_INIT_VIDEO)) {
-        std::cerr<<"SDL initialization failed: "<<SDL_GetError()<<'\\n'; return 1;
+        std::cerr<<"SDL initialization failed: "<<SDL_GetError()<<'\n'; return 1;
     }
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION,2);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION,1);
@@ -100,26 +100,26 @@ int PreviewWindow::run(std::span<const renderer::DrawItem> items,
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,24);
     SDL_Window* window=SDL_CreateWindow("OpenSim-next PC Viewer - World Preview",1280,720,
                                         SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE);
-    if(!window) { std::cerr<<"Window creation failed: "<<SDL_GetError()<<'\\n'; SDL_Quit(); return 1; }
+    if(!window) { std::cerr<<"Window creation failed: "<<SDL_GetError()<<'\n'; SDL_Quit(); return 1; }
     SDL_GLContext context=SDL_GL_CreateContext(window);
-    if(!context) { std::cerr<<"OpenGL context creation failed: "<<SDL_GetError()<<'\\n'; SDL_DestroyWindow(window); SDL_Quit(); return 1; }
+    if(!context) { std::cerr<<"OpenGL context creation failed: "<<SDL_GetError()<<'\n'; SDL_DestroyWindow(window); SDL_Quit(); return 1; }
     SDL_GL_SetSwapInterval(1);
 
     renderer::OpenGLMeshRegistry meshRegistry;
     if (!meshRegistry.initialize()) {
-        std::cerr << "OpenGL vertex-buffer functions are unavailable on this driver.\\n";
+        std::cerr << "OpenGL vertex-buffer functions are unavailable on this driver.\n";
         SDL_GL_DestroyContext(context); SDL_DestroyWindow(window); SDL_Quit(); return 1;
     }
     renderer::OpenGLBasicShader basicShader;
     const bool shaderReady = basicShader.initialize();
-    std::cout << (shaderReady ? "Renderer: GLSL 1.20 basic shader\\n"
-                              : "Renderer: fixed-function fallback (GLSL unavailable)\\n");
+    std::cout << (shaderReady ? "Renderer: GLSL 1.20 basic shader\n"
+                              : "Renderer: fixed-function fallback (GLSL unavailable)\n");
 
     std::unordered_set<std::uint32_t> uploadedHandles;
     for (const auto& item : items) {
         if (!item.geometry || !uploadedHandles.insert(item.mesh.value).second) continue;
         if (!meshRegistry.upload(item.mesh, *item.geometry)) {
-            std::cerr << "Failed to upload mesh handle " << item.mesh.value << '\\n';
+            std::cerr << "Failed to upload mesh handle " << item.mesh.value << '\n';
             basicShader.shutdown();
             meshRegistry.shutdown();
             SDL_GL_DestroyContext(context); SDL_DestroyWindow(window); SDL_Quit(); return 1;
@@ -132,7 +132,7 @@ int PreviewWindow::run(std::span<const renderer::DrawItem> items,
     glLightfv(GL_LIGHT0,GL_POSITION,light);
     glColorMaterial(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE);
     int width=1280,height=720; SDL_GetWindowSizeInPixels(window,&width,&height); setProjection(width,height);
-    std::cout<<"World preview: "<<items.size()<<" bound objects. Left drag: orbit; right drag: pan; wheel: zoom.\\n";
+    std::cout<<"World preview: "<<items.size()<<" bound objects. Left drag: orbit; right drag: pan; wheel: zoom.\n";
     bool running=true,left=false,right=false;
     while(running) {
         SDL_Event event;
