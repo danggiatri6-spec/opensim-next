@@ -26,7 +26,7 @@ Ubuntu remains in CI as a portability smoke test; it is not a statement of equal
 - [x] Visible preview driven by World Model draw items
 - [x] Camera orbit, pan, and zoom input
 
-## Milestone 2 — Real graphics backend
+## Milestone 2 — Real graphics backend (prototype track)
 - [x] Move preview GPU cache into a handle-based OpenGL mesh resource registry
 - [ ] Add shader-based OpenGL backend
 - [ ] Add GPU resource lifecycle and capability reporting
@@ -34,11 +34,22 @@ Ubuntu remains in CI as a portability smoke test; it is not a statement of equal
 - [ ] Add frustum culling and simple LOD
 - [ ] Validate low/medium/high quality profiles on integrated graphics
 
-## Milestone 3 — Content and Grid integration
-- [ ] glTF 2.0 asset ingestion and cache
-- [ ] OpenSim login and region protocol research
-- [ ] Firestorm-compatible protocol adapter design
-- [ ] Live region/object state synchronization
+## Milestone F0 — Firestorm upstream integration (start now; parallel to prototype)
+- [ ] Pin an official Firestorm release baseline and exact commit
+- [ ] Create a dedicated Firestorm-based integration branch/fork while preserving upstream history
+- [ ] Build unmodified OpenSim-enabled Firestorm on Windows 10/11
+- [ ] Connect to a test OpenSim Grid and verify login, region, avatar, inventory, chat and basic building
+- [ ] Establish repeatable build instructions and smoke-test automation
+- [ ] Record license, dependency and patch-provenance requirements
+
+See [Firestorm integration strategy](firestorm-integration.md).
+
+## Milestone 3 — OpenSim-next adapters and product integration
+- [ ] Add OpenSim-next product branding, onboarding and default Grid configuration
+- [ ] Adapt Firestorm protocol/world events into OpenSim-next service boundaries
+- [ ] Define ownership of replicated world state to avoid duplicate authoritative models
+- [ ] Integrate selected OpenSim-next renderer experiments behind stable adapters
+- [ ] Modernize UI, asset pipeline and rendering incrementally with regression tests
 
 ## Milestone 4 — Modern Viewer experience
 - [ ] Avatar rendering and animation
@@ -48,4 +59,4 @@ Ubuntu remains in CI as a portability smoke test; it is not a statement of equal
 
 ## Renderer integration progress
 
-The SDL3/OpenGL preview uploads validated MeshData into GPU vertex and index buffers and draws indexed triangles. The current implementation is an OpenGL 2.1 compatibility path using fixed-function client arrays; the next renderer milestone is moving GPU resource ownership into a backend registry and introducing shaders.
+The SDL3/OpenGL preview is an architecture prototype only. Firestorm integration is now a parallel priority: use Firestorm as the mature functional baseline and migrate OpenSim-next improvements incrementally rather than recreating the complete Viewer stack.
