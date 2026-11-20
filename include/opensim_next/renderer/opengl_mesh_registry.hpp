@@ -15,8 +15,8 @@ public:
 
     OpenGLMeshRegistry(const OpenGLMeshRegistry&) = delete;
     OpenGLMeshRegistry& operator=(const OpenGLMeshRegistry&) = delete;
-    OpenGLMeshRegistry(OpenGLMeshRegistry&&) noexcept;
-    OpenGLMeshRegistry& operator=(OpenGLMeshRegistry&&) noexcept;
+    OpenGLMeshRegistry(OpenGLMeshRegistry&&) = delete;
+    OpenGLMeshRegistry& operator=(OpenGLMeshRegistry&&) = delete;
 
     [[nodiscard]] bool initialize();
     [[nodiscard]] bool upload(MeshHandle handle, const MeshData& mesh);
