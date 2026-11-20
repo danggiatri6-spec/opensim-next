@@ -2,7 +2,7 @@
 
 An open, modern PC client for OpenSim-based virtual worlds.
 
-**Current status:** architecture and build skeleton. This repository does not yet contain a working 3D Viewer or a Firestorm-derived protocol implementation.
+**Current status:** a tested C++20 foundation with a world model, renderer API, mock backend, world-to-renderer bridge, and orbit camera controller. It can submit a headless test scene to the mock backend, but it does not yet draw pixels, connect to an OpenSim Grid, or implement Firestorm-compatible networking.
 
 ## Product direction
 
@@ -35,7 +35,7 @@ cmake -S . -B build
 cmake --build build --config Release
 ```
 
-Run the current bootstrap executable:
+Run the current headless pipeline preview:
 
 ```sh
 ./build/opensim-next-viewer
@@ -55,7 +55,7 @@ The first real client milestone is:
 6. Send and receive local chat.
 7. Disconnect cleanly with useful diagnostics.
 
-The current repository skeleton is only the build foundation for that work.
+The current executable builds a local preview scene and submits its draw items to a mock renderer. This validates the world-to-renderer data flow only; it is not a graphical Viewer.
 
 ## Architecture
 
