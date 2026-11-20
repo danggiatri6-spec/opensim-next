@@ -4,6 +4,9 @@
 #include "opensim_next/renderer/mock_renderer.hpp"
 #include "opensim_next/renderer/world_render_bridge.hpp"
 #include "opensim_next/world/world_state.hpp"
+#ifdef OPENSIM_NEXT_ENABLE_SDL3
+#include "opensim_next/platform/preview_window.hpp"
+#endif
 
 #include <iostream>
 
@@ -57,7 +60,15 @@ int Application::run() const {
     renderer.destroyMaterial(cubeMaterial);
     renderer.destroyMesh(cubeMesh);
     renderer.shutdown();
-    return submitted ? 0 : 1;
+    if (!submitted) {
+        return 1;
+    }
+#ifdef OPENSIM_NEXT_ENABLE_SDL3
+    std::cout << "Opening SDL3/OpenGL compatibility preview. Press Escape or close the window to exit.\\n";
+    return platform::PreviewWindow{}.run();
+#else
+    return 0;
+#endif
 }
 
 } // namespace opensim_next::app
