@@ -3,6 +3,7 @@
 #include "opensim_next/renderer/mesh_data.hpp"
 #include "opensim_next/renderer/renderer_api.hpp"
 
+#include <cstddef>
 #include <memory>
 
 namespace opensim_next::renderer {
