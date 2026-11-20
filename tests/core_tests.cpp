@@ -121,7 +121,7 @@ int main() {
     renderer.destroyMaterial(material);
     renderer.destroyTexture(texture);
     renderer.destroyMesh(mesh);
-    assert(!renderer.renderFrame({CameraState{}, drawItems}));
+    assert(!renderer.renderFrame({CameraState{}, bridgedDrawItems}));
     renderer.shutdown();
     assert(!renderer.isInitialized());
     assert(renderer.capabilities().maxTextureSize == 0);
