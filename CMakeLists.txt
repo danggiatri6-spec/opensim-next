@@ -7,6 +7,7 @@ add_library(opensim_next_core
   src/world/world_state.cpp
   src/renderer/mock_renderer.cpp
   src/renderer/world_render_bridge.cpp
+  src/renderer/camera_controller.cpp
 )
 target_include_directories(opensim_next_core PUBLIC include)
 target_compile_features(opensim_next_core PUBLIC cxx_std_20)
