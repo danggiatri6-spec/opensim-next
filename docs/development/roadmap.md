@@ -26,8 +26,10 @@
 - [x] Add a backend-independent world-to-renderer bridge.
 - [x] Add a pure Z-up orbit camera controller.
 - [x] Submit a headless preview scene through the mock backend.
-- [ ] Add a real window and input layer.
-- [ ] Render a visible primitive scene with a real graphics backend.
+- [x] Add an SDL3 window and basic event loop.
+- [x] Bring up an OpenGL 2.1 compatibility context and render a rotating test cube.
+- [ ] Connect World Model draw items and CameraController state to the visible renderer.
+- [ ] Replace fixed-function OpenGL preview code with a shader-based backend.
 - [ ] Compare Vulkan and wgpu with a small proof of concept.
 - [ ] Measure low-spec and modern hardware before choosing a backend.
 
