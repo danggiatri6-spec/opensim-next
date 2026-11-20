@@ -1,5 +1,6 @@
 #include "opensim_next/platform/preview_window.hpp"
 #include "opensim_next/renderer/opengl_mesh_registry.hpp"
+#include "opensim_next/renderer/opengl_basic_shader.hpp"
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_opengl.h>
@@ -109,11 +110,17 @@ int PreviewWindow::run(std::span<const renderer::DrawItem> items,
         std::cerr << "OpenGL vertex-buffer functions are unavailable on this driver.\\n";
         SDL_GL_DestroyContext(context); SDL_DestroyWindow(window); SDL_Quit(); return 1;
     }
+    renderer::OpenGLBasicShader basicShader;
+    const bool shaderReady = basicShader.initialize();
+    std::cout << (shaderReady ? "Renderer: GLSL 1.20 basic shader\\n"
+                              : "Renderer: fixed-function fallback (GLSL unavailable)\\n");
+
     std::unordered_set<std::uint32_t> uploadedHandles;
     for (const auto& item : items) {
         if (!item.geometry || !uploadedHandles.insert(item.mesh.value).second) continue;
         if (!meshRegistry.upload(item.mesh, *item.geometry)) {
             std::cerr << "Failed to upload mesh handle " << item.mesh.value << '\\n';
+            basicShader.shutdown();
             meshRegistry.shutdown();
             SDL_GL_DestroyContext(context); SDL_DestroyWindow(window); SDL_Quit(); return 1;
         }
@@ -147,9 +154,12 @@ int PreviewWindow::run(std::span<const renderer::DrawItem> items,
         glClearColor(.055F,.075F,.11F,1.0F);
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
         applyCamera(camera.cameraState());
+        if (shaderReady) basicShader.bind();
         renderWorldItems(items,meshRegistry);
+        if (shaderReady) basicShader.unbind();
         SDL_GL_SwapWindow(window);
     }
+    basicShader.shutdown();
     meshRegistry.shutdown();
     SDL_GL_DestroyContext(context); SDL_DestroyWindow(window); SDL_Quit(); return 0;
 }
