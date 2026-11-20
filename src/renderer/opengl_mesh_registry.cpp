@@ -56,8 +56,6 @@ struct OpenGLMeshRegistry::Impl {
 
 OpenGLMeshRegistry::OpenGLMeshRegistry() : impl_(std::make_unique<Impl>()) {}
 OpenGLMeshRegistry::~OpenGLMeshRegistry() { shutdown(); }
-OpenGLMeshRegistry::OpenGLMeshRegistry(OpenGLMeshRegistry&&) noexcept = default;
-OpenGLMeshRegistry& OpenGLMeshRegistry::operator=(OpenGLMeshRegistry&&) noexcept = default;
 
 bool OpenGLMeshRegistry::initialize() {
     if (!impl_ || impl_->initialized) return false;
@@ -72,15 +70,16 @@ bool OpenGLMeshRegistry::upload(MeshHandle handle, const MeshData& mesh) {
 
     constexpr auto maxBytes = static_cast<std::uintmax_t>(
         std::numeric_limits<std::ptrdiff_t>::max());
-    const auto vertexBytes = static_cast<std::uintmax_t>(mesh.vertices.size())
-        * sizeof(MeshVertex);
-    const auto indexBytes = static_cast<std::uintmax_t>(mesh.indices.size())
-        * sizeof(std::uint32_t);
-    if (vertexBytes > maxBytes || indexBytes > maxBytes
-        || mesh.indices.size() > static_cast<std::size_t>(
+    const auto vertexCount = static_cast<std::uintmax_t>(mesh.vertices.size());
+    const auto indexCount = static_cast<std::uintmax_t>(mesh.indices.size());
+    if (vertexCount > maxBytes / sizeof(MeshVertex)
+        || indexCount > maxBytes / sizeof(std::uint32_t)
+        || indexCount > static_cast<std::uintmax_t>(
             std::numeric_limits<GLsizei>::max())) {
         return false;
     }
+    const auto vertexBytes = vertexCount * sizeof(MeshVertex);
+    const auto indexBytes = indexCount * sizeof(std::uint32_t);
 
     while (glGetError() != GL_NO_ERROR) {}
     GpuMesh gpu;
