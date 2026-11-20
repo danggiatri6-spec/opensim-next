@@ -2,7 +2,7 @@
 
 An open, modern PC client for OpenSim-based virtual worlds.
 
-**Current status:** a tested C++20 foundation with a world model, renderer API, mock backend, world-to-renderer bridge, and orbit camera controller. It can submit a headless test scene to the mock backend, but it does not yet draw pixels, connect to an OpenSim Grid, or implement Firestorm-compatible networking.
+**Current status:** a tested C++20 foundation with a world model, renderer API, mock backend, world-to-renderer bridge, orbit camera controller, and an SDL3/OpenGL compatibility-profile graphics preview. The preview displays a rotating test cube; it is not yet the production renderer, does not yet render World Model draw items, and does not connect to an OpenSim Grid or implement Firestorm-compatible networking.
 
 ## Product direction
 
@@ -26,7 +26,9 @@ OpenSim-next aims to preserve the social and creative strengths of Second Life-s
 
 Requirements:
 - CMake 3.20+
-- A C++20 compiler (MSVC 2022, GCC 11+, or Clang 14+)
+- A C and C++20 compiler (MSVC 2022, GCC 11+, or Clang 14+)
+- Network access on the first configure to fetch SDL3
+- An OpenGL 2.1 compatibility-capable graphics driver for the interactive preview
 
 Build:
 
@@ -55,7 +57,7 @@ The first real client milestone is:
 6. Send and receive local chat.
 7. Disconnect cleanly with useful diagnostics.
 
-The current executable builds a local preview scene and submits its draw items to a mock renderer. This validates the world-to-renderer data flow only; it is not a graphical Viewer.
+The executable first validates a local World Model-to-MockRenderer frame submission, then opens an SDL3/OpenGL compatibility preview window. The visible rotating cube is currently a graphics bring-up test, separate from the mock-rendered World Model object.
 
 ## Architecture
 
