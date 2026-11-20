@@ -24,6 +24,9 @@ add_executable(opensim-next-viewer src/main.cpp)
 target_link_libraries(opensim-next-viewer PRIVATE opensim_next_core)
 
 if(OPENSIM_NEXT_ENABLE_SDL3)
+  find_package(OpenGL REQUIRED)
+  target_link_libraries(opensim_next_core PUBLIC OpenGL::GL)
+
   include(FetchContent)
   set(SDL_TESTS OFF CACHE BOOL "" FORCE)
   set(SDL_EXAMPLES OFF CACHE BOOL "" FORCE)
