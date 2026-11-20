@@ -40,22 +40,22 @@ constexpr GLenum kArrayBuffer = 0x8892;
 constexpr GLenum kElementArrayBuffer = 0x8893;
 constexpr GLenum kStaticDraw = 0x88E4;
 
-using GenBuffersProc = void (APIENTRYP)(GLsizei, GLuint*);
-using DeleteBuffersProc = void (APIENTRYP)(GLsizei, const GLuint*);
-using BindBufferProc = void (APIENTRYP)(GLenum, GLuint);
-using BufferDataProc = void (APIENTRYP)(GLenum, std::ptrdiff_t, const void*, GLenum);
+using GenBuffersProc = void (APIENTRY *)(GLsizei, GLuint*);
+using DeleteBuffersProc = void (APIENTRY *)(GLsizei, const GLuint*);
+using BindBufferProc = void (APIENTRY *)(GLenum, GLuint);
+using BufferDataProc = void (APIENTRY *)(GLenum, std::ptrdiff_t, const void*, GLenum);
 
 struct OpenGLBufferFunctions {
-    GenBuffersProc* genBuffers{};
-    DeleteBuffersProc* deleteBuffers{};
-    BindBufferProc* bindBuffer{};
-    BufferDataProc* bufferData{};
+    GenBuffersProc genBuffers{};
+    DeleteBuffersProc deleteBuffers{};
+    BindBufferProc bindBuffer{};
+    BufferDataProc bufferData{};
 
     [[nodiscard]] bool load() {
-        genBuffers = reinterpret_cast<GenBuffersProc*>(SDL_GL_GetProcAddress("glGenBuffers"));
-        deleteBuffers = reinterpret_cast<DeleteBuffersProc*>(SDL_GL_GetProcAddress("glDeleteBuffers"));
-        bindBuffer = reinterpret_cast<BindBufferProc*>(SDL_GL_GetProcAddress("glBindBuffer"));
-        bufferData = reinterpret_cast<BufferDataProc*>(SDL_GL_GetProcAddress("glBufferData"));
+        genBuffers = reinterpret_cast<GenBuffersProc>(SDL_GL_GetProcAddress("glGenBuffers"));
+        deleteBuffers = reinterpret_cast<DeleteBuffersProc>(SDL_GL_GetProcAddress("glDeleteBuffers"));
+        bindBuffer = reinterpret_cast<BindBufferProc>(SDL_GL_GetProcAddress("glBindBuffer"));
+        bufferData = reinterpret_cast<BufferDataProc>(SDL_GL_GetProcAddress("glBufferData"));
         return genBuffers && deleteBuffers && bindBuffer && bufferData;
     }
 };
