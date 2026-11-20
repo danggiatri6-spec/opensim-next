@@ -32,3 +32,8 @@
 - [ ] Modern inventory/build UI
 - [ ] Social and communication interface
 - [ ] Low/medium/high graphics profiles
+
+
+## Renderer integration progress
+
+The SDL3/OpenGL preview now uploads validated MeshData into GPU vertex and index buffers and draws indexed triangles. The current implementation is an OpenGL 2.1 compatibility path using fixed-function client arrays; the next renderer milestone is moving GPU resource ownership into a backend registry and introducing shaders.
