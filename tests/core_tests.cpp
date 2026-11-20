@@ -1,5 +1,6 @@
 #include "opensim_next/app/application.hpp"
 #include "opensim_next/renderer/mock_renderer.hpp"
+#include "opensim_next/renderer/primitive_meshes.hpp"
 #include "opensim_next/renderer/camera_controller.hpp"
 #include "opensim_next/renderer/world_render_bridge.hpp"
 #include "opensim_next/world/world_state.hpp"
@@ -57,6 +58,25 @@ int main() {
     assert(world.findRegion("region-1") == nullptr);
     assert(world.regionCount() == 0);
     using namespace opensim_next::renderer;
+
+    const auto cubeGeometry = primitives::makeUnitCube();
+    assert(cubeGeometry.isValid());
+    assert(cubeGeometry.vertices.size() == 24);
+    assert(cubeGeometry.indices.size() == 36);
+    const auto planeGeometry = primitives::makeUnitPlane();
+    assert(planeGeometry.isValid());
+    assert(planeGeometry.vertices.size() == 4);
+    assert(planeGeometry.indices.size() == 6);
+
+    auto invalidGeometry = cubeGeometry;
+    invalidGeometry.indices[0] = 9999;
+    assert(!invalidGeometry.isValid());
+    invalidGeometry = cubeGeometry;
+    invalidGeometry.indices.pop_back();
+    assert(!invalidGeometry.isValid());
+    invalidGeometry = cubeGeometry;
+    invalidGeometry.vertices[0].position[0] = std::numeric_limits<float>::infinity();
+    assert(!invalidGeometry.isValid());
 
     MockRenderer renderer;
     assert(!renderer.isInitialized());
