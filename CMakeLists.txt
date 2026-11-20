@@ -40,9 +40,9 @@ if(OPENSIM_NEXT_ENABLE_SDL3)
   )
   FetchContent_MakeAvailable(SDL3)
 
-  target_sources(opensim-next-viewer PRIVATE src/platform/preview_window.cpp)
-  target_link_libraries(opensim-next-viewer PRIVATE SDL3::SDL3)
-  target_compile_definitions(opensim-next-viewer PRIVATE OPENSIM_NEXT_ENABLE_SDL3=1)
+  target_sources(opensim_next_core PRIVATE src/platform/preview_window.cpp)
+  target_link_libraries(opensim_next_core PUBLIC SDL3::SDL3)
+  target_compile_definitions(opensim_next_core PRIVATE OPENSIM_NEXT_ENABLE_SDL3=1)
 endif()
 
 if(OPENSIM_NEXT_BUILD_TESTS)
