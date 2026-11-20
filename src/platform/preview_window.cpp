@@ -33,6 +33,16 @@ void applyCamera(const renderer::CameraState& c) {
     glMatrixMode(GL_MODELVIEW);
     glLoadMatrixd(view);
 }
+void drawMeshGeometry(const renderer::MeshData& mesh) {
+    glBegin(GL_TRIANGLES);
+    for (const std::uint32_t index : mesh.indices) {
+        const auto& vertex = mesh.vertices[index];
+        glNormal3fv(vertex.normal);
+        glTexCoord2fv(vertex.uv);
+        glVertex3fv(vertex.position);
+    }
+    glEnd();
+}
 void drawUnitCube() {
     glBegin(GL_QUADS);
     glNormal3f(0,0,1);
@@ -73,7 +83,11 @@ void renderWorldItems(std::span<const renderer::DrawItem> items) {
         glColor3f(.35F+((hash>>16U)&255U)/510.0F,
                   .35F+((hash>>8U)&255U)/510.0F,
                   .35F+(hash&255U)/510.0F);
-        drawUnitCube();
+        if (item.geometry && item.geometry->isValid()) {
+            drawMeshGeometry(*item.geometry);
+        } else {
+            drawUnitCube();
+        }
         glPopMatrix();
     }
 }
