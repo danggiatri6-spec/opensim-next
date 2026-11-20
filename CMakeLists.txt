@@ -9,7 +9,6 @@ add_library(opensim_next_core
   src/world/world_state.cpp
   src/renderer/mock_renderer.cpp
   src/renderer/mesh_data.cpp
-  src/renderer/opengl_mesh_registry.cpp
   src/renderer/primitive_meshes.cpp
   src/renderer/world_render_bridge.cpp
   src/renderer/camera_controller.cpp
@@ -46,7 +45,10 @@ if(OPENSIM_NEXT_ENABLE_SDL3)
   )
   FetchContent_MakeAvailable(SDL3)
 
-  target_sources(opensim_next_core PRIVATE src/platform/preview_window.cpp)
+  target_sources(opensim_next_core PRIVATE
+    src/platform/preview_window.cpp
+    src/renderer/opengl_mesh_registry.cpp
+  )
   target_link_libraries(opensim_next_core PUBLIC SDL3::SDL3)
   target_compile_definitions(opensim_next_core PRIVATE OPENSIM_NEXT_ENABLE_SDL3=1)
 endif()
