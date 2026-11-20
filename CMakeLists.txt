@@ -9,6 +9,7 @@ add_library(opensim_next_core
   src/world/world_state.cpp
   src/renderer/mock_renderer.cpp
   src/renderer/mesh_data.cpp
+  src/renderer/opengl_mesh_registry.cpp
   src/renderer/primitive_meshes.cpp
   src/renderer/world_render_bridge.cpp
   src/renderer/camera_controller.cpp
