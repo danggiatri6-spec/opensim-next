@@ -64,7 +64,7 @@ int Application::run() const {
         return 1;
     }
 #ifdef OPENSIM_NEXT_ENABLE_SDL3
-    std::cout << "Opening SDL3/OpenGL compatibility preview. Press Escape or close the window to exit.\\n";
+    std::cout << "Opening SDL3/OpenGL compatibility preview. Press Escape or close the window to exit.\n";
     return platform::PreviewWindow{}.run();
 #else
     return 0;
