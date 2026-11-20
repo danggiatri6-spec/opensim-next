@@ -13,16 +13,17 @@ The renderer API separates world state and viewer behavior from graphics backend
 
 ## Current interface
 
-`IRenderer` defines:
-- initialization and resize;
-- mesh, texture, and material resource creation/destruction;
-- frame submission;
-- capability reporting;
-- shutdown.
+`IRenderer` defines initialization and resize, mesh/texture/material resource creation and destruction, frame submission, capability reporting, and shutdown.
 
-`RenderFrame` contains a camera snapshot and a non-owning span of draw items. The caller must keep the draw-item storage alive for the duration of `renderFrame`.
+`RenderFrame` contains a camera snapshot and a non-owning span of draw items. The caller must keep the draw-item storage alive for the duration of frame consumption.
 
-Resource handles are opaque integer tokens. A zero-valued handle is invalid. Backends own the underlying GPU or CPU resource and must reject unknown handles.
+Each `DrawItem` has opaque mesh and material handles. It may also carry a non-owning pointer to validated CPU-side `MeshData` for the compatibility preview and backend bring-up. The geometry pointer is optional; when present, its owner must keep the MeshData alive until all consumers finish using the frame. Production backends should move ownership into a renderer resource registry and keep frame records handle-based.
+
+## Mesh data
+
+`MeshData` stores interleaved vertex attributes as position (3 floats), normal (3 floats), and UV (2 floats), plus a 32-bit index array. Validation rejects empty geometry, index counts not divisible by three, non-finite attributes, and out-of-range indices.
+
+The primitive factory currently provides a unit cube (24 vertices, 36 indices) and a unit plane (4 vertices, 6 indices). Vertices are duplicated across cube faces to preserve hard face normals and independent UV seams.
 
 ## Material baseline
 
@@ -34,17 +35,17 @@ The current camera and transform structures reuse the renderer-independent world
 
 ## Validation
 
-The mock renderer contract tests cover lifecycle rules, invalid dimensions, resource creation, material parameter bounds, unknown resource rejection, frame submission, capabilities, and shutdown.
+The mock renderer contract tests cover lifecycle rules, invalid dimensions, resource creation, material parameter bounds, unknown resource rejection, frame submission, capabilities, shutdown, and optional MeshData validation. Geometry unit tests cover primitive counts and invalid indices/attributes.
 
 ## Non-goals for this milestone
 
-- No Vulkan, OpenGL, Direct3D, or Metal implementation yet.
-- No window-system or swapchain ownership.
+- No production Vulkan, OpenGL, Direct3D, or Metal backend.
+- No window-system or swapchain ownership in IRenderer.
 - No shader language or GPU memory allocator exposed publicly.
 - No assumptions that every backend supports skeletal animation, shadows, or advanced materials.
 
 ## Next implementation steps
 
-1. Add a renderer selection/configuration layer to the application shell.
-2. Build a small renderable test scene and validate camera conventions.
-3. Prototype a real backend behind `IRenderer`; compare integration and maintenance costs before selecting the long-term API.
+1. Replace the non-owning preview geometry pointer with a renderer-owned mesh resource registry.
+2. Upload vertex and index data into GPU buffers and draw through a shader-based OpenGL path.
+3. Add texture upload and material binding, then compare the maintenance cost of OpenGL and Vulkan backends.
