@@ -1,5 +1,6 @@
 #include "opensim_next/app/application.hpp"
 #include "opensim_next/renderer/mock_renderer.hpp"
+#include "opensim_next/renderer/world_render_bridge.hpp"
 #include "opensim_next/world/world_state.hpp"
 
 #include <cassert>
@@ -81,11 +82,33 @@ int main() {
     const auto material = renderer.createMaterial(materialDescriptor);
     assert(static_cast<bool>(material));
 
-    const DrawItem drawItem{99, mesh, material, {}};
-    const DrawItem drawItems[]{drawItem};
-    assert(renderer.renderFrame({CameraState{}, drawItems}));
+    WorldState renderWorld;
+    assert(renderWorld.addRegion({"render-region", "Render Test"}));
+    Transform firstTransform;
+    firstTransform.position = {1.0, 2.0, 3.0};
+    Transform secondTransform;
+    secondTransform.position = {4.0, 5.0, 6.0};
+    assert(renderWorld.addObject("render-region", {200, "Second", secondTransform}));
+    assert(renderWorld.addObject("render-region", {100, "First", firstTransform}));
+
+    const RenderBinding renderBindings[]{
+        {200, mesh, material},
+        {100, mesh, material},
+        {300, mesh, material},
+        {400, MeshHandle{}, material}
+    };
+    const auto* renderRegion = renderWorld.findRegion("render-region");
+    assert(renderRegion != nullptr);
+    const auto bridgedDrawItems = WorldRenderBridge::buildDrawItems(*renderRegion, renderBindings);
+    assert(bridgedDrawItems.size() == 2);
+    assert(bridgedDrawItems[0].entityId == 100);
+    assert(bridgedDrawItems[1].entityId == 200);
+    assert(bridgedDrawItems[0].transform.position.z == 3.0);
+    assert(bridgedDrawItems[1].transform.position.x == 4.0);
+
+    assert(renderer.renderFrame({CameraState{}, bridgedDrawItems}));
     assert(renderer.renderedFrameCount() == 1);
-    assert(renderer.lastDrawItemCount() == 1);
+    assert(renderer.lastDrawItemCount() == 2);
 
     const auto invalidMaterial = renderer.createMaterial(
         MaterialDescriptor{Color4{}, 0.0F, 1.5F, std::nullopt});
