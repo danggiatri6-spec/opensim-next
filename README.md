@@ -38,6 +38,12 @@ ctest --test-dir build -C Release --output-on-failure
 
 Set OPENSIM_NEXT_ENABLE_SDL3=OFF to build the headless core and unit tests without the interactive graphics preview.
 
+## Viewer development strategy
+
+The production PC Viewer is being developed in the dedicated [opensim-next-viewer](https://github.com/danggiatri6-spec/opensim-next-viewer) repository using a **Firestorm-first** integration strategy. The Firestorm-derived client is the mature foundation for OpenSim protocol support, world synchronization, avatars, inventory, chat, and building workflows. OpenSim-next-specific product identity, Grid entry, UX, performance work, AI-assisted creation, and gradual rendering evolution will be developed on top of that foundation.
+
+The SDL3/OpenGL code in this repository remains a technical experiment and renderer research track. It is not the production Viewer foundation and will not be expanded as a parallel reimplementation of the full client.
+
 ## Architecture
 
 See [architecture overview](docs/architecture/overview.md), [renderer API](docs/architecture/renderer-api.md), [world-render bridge](docs/architecture/world-render-bridge.md), [camera controller](docs/architecture/camera-controller.md), and [SDL3/OpenGL preview](docs/architecture/sdl3-opengl-preview.md).
