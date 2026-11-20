@@ -2,11 +2,29 @@
 
 OpenSim-next is an independent PC Viewer project for a modern OpenSim-compatible virtual world.
 
-The current repository contains a C++20 application foundation, a tested world-state model, a renderer abstraction, a world-to-renderer bridge, a camera controller, CPU mesh data and primitive factories, and an SDL3/OpenGL compatibility preview. The preview consumes validated vertex/index geometry and supports mouse orbit, pan, and zoom. It is an integration prototype, not yet a production 3D Viewer and does not connect to an OpenSim Grid or implement Firestorm-compatible networking.
+## Product and platform priorities
+
+The first product target is **Windows 10/11 64-bit**. Development, usability, performance work, and release validation prioritize ordinary Windows PC users, including systems with integrated graphics.
+
+- **Windows 10/11 64-bit — Phase 1:** primary consumer platform and the only platform targeted for full initial functionality and optimization.
+- **macOS — Phase 2:** consumer platform after the Windows core experience is established.
+- **Linux — Phase 3:** supplementary platform; maintain sensible portability without diverting early product resources.
+- **Android — later:** lightweight companion/client planning begins after the PC product is mature.
+
+Initial Viewer engineering-resource planning is Windows 75%, macOS 15%, and Linux 10%. These are planning allocations, not market-share measurements. Android is outside the initial PC Viewer allocation.
+
+Ubuntu CI is retained as a portability smoke test. It does not mean Linux has the same product priority or release commitment as Windows. macOS CI and full support are deferred until Phase 2.
+
+See [platform support policy](docs/development/platform-support.md).
+
+## Current implementation
+
+The repository contains a C++20 application foundation, a tested world-state model, a renderer abstraction, a world-to-renderer bridge, a camera controller, CPU mesh data and primitive factories, and an SDL3/OpenGL compatibility preview. The preview uploads validated vertex/index geometry to GPU VBO/IBO buffers and draws indexed triangles. It supports mouse orbit, pan, and zoom. It is an integration prototype, not yet a production 3D Viewer and does not connect to an OpenSim Grid or implement Firestorm-compatible networking.
 
 ## Build
 
 Requirements:
+- Windows 10/11 64-bit is the primary development and product target
 - CMake 3.20+
 - C and C++20 compiler
 - Network access on first configure to fetch SDL3
@@ -26,4 +44,4 @@ See [architecture overview](docs/architecture/overview.md), [renderer API](docs/
 
 ## Project status
 
-The project is under active early-stage development. The compatibility preview currently submits indexed triangles through fixed-function OpenGL immediate mode. It does not yet upload GPU vertex/index buffers, use shaders or PBR materials, load arbitrary external mesh assets, render avatars or terrain, or connect to a live Grid. The non-owning CPU geometry pointer is a temporary bridge; production resource ownership will move into a renderer-managed mesh registry.
+The project is under active early-stage development. The compatibility preview currently uses OpenGL 2.1 fixed-function client arrays with GPU VBO/IBO buffers. It does not yet use programmable shaders or PBR materials, upload textures, load arbitrary external mesh assets, render avatars or terrain, or connect to a live Grid. The non-owning CPU geometry pointer is a temporary bridge; production resource ownership will move into a renderer-managed mesh registry.
