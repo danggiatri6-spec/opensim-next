@@ -16,8 +16,13 @@ jobs:
     steps:
       - name: Check out source
         uses: actions/checkout@v4
+      - name: Install Linux graphics build dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxkbcommon-dev libgl1-mesa-dev
       - name: Configure
-        run: cmake -S . -B build -DOPENSIM_NEXT_BUILD_TESTS=ON
+        run: cmake -S . -B build -DOPENSIM_NEXT_BUILD_TESTS=ON -DOPENSIM_NEXT_ENABLE_SDL3=ON
       - name: Build
         run: cmake --build build --config Release
       - name: Test
