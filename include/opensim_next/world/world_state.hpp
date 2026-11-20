@@ -2,6 +2,7 @@
 
 #include "opensim_next/world/types.hpp"
 
+#include <cstddef>
 #include <string>
 #include <unordered_map>
 
