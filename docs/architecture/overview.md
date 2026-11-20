@@ -32,6 +32,10 @@ The protocol layer owns network communication and updates the world model. The w
 
 The repository has a C++20 core, a world-state model, a backend-neutral renderer API, a mock renderer for validation, a world-to-renderer bridge, a camera controller, and an SDL3/OpenGL compatibility preview. The preview uploads indexed mesh data through VBO/IBO buffers and uses the shared camera controller for orbit, pan, and zoom.
 
+## Viewer foundation strategy
+
+The standalone SDL3/OpenGL implementation is an architecture prototype, not a plan to recreate all Viewer functionality. Firestorm is the intended mature functional baseline. Its OpenSim-capable networking, world synchronization, avatars, inventory, assets, social systems, building tools and established rendering behavior should be reused first, then modernized behind adapters in small, testable steps. See [Firestorm integration strategy](../development/firestorm-integration.md).
+
 ## Migration principles
 
 - Keep protocol and renderer independent.
