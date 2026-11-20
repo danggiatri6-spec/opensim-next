@@ -2,7 +2,7 @@
 
 OpenSim-next is an independent PC Viewer project for a modern OpenSim-compatible virtual world.
 
-The current repository contains a C++20 application foundation, a tested world-state model, a renderer abstraction, a world-to-renderer bridge, a camera controller, and an SDL3/OpenGL compatibility preview. The preview displays bound world objects and supports mouse orbit, pan, and zoom. It is an integration prototype, not yet a production 3D Viewer and does not connect to an OpenSim Grid or implement Firestorm-compatible networking.
+The current repository contains a C++20 application foundation, a tested world-state model, a renderer abstraction, a world-to-renderer bridge, a camera controller, CPU mesh data and primitive factories, and an SDL3/OpenGL compatibility preview. The preview consumes validated vertex/index geometry and supports mouse orbit, pan, and zoom. It is an integration prototype, not yet a production 3D Viewer and does not connect to an OpenSim Grid or implement Firestorm-compatible networking.
 
 ## Build
 
@@ -26,4 +26,4 @@ See [architecture overview](docs/architecture/overview.md), [renderer API](docs/
 
 ## Project status
 
-The project is under active early-stage development. The compatibility preview uses fixed-function OpenGL only as a temporary bring-up path. It does not yet load arbitrary mesh assets, render avatars or terrain, or connect to a live Grid.
+The project is under active early-stage development. The compatibility preview currently submits indexed triangles through fixed-function OpenGL immediate mode. It does not yet upload GPU vertex/index buffers, use shaders or PBR materials, load arbitrary external mesh assets, render avatars or terrain, or connect to a live Grid. The non-owning CPU geometry pointer is a temporary bridge; production resource ownership will move into a renderer-managed mesh registry.
