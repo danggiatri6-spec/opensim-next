@@ -27,7 +27,7 @@ Ubuntu remains in CI as a portability smoke test; it is not a statement of equal
 - [x] Camera orbit, pan, and zoom input
 
 ## Milestone 2 — Real graphics backend
-- [ ] Move temporary preview GPU cache into a renderer-owned resource registry
+- [x] Move preview GPU cache into a handle-based OpenGL mesh resource registry
 - [ ] Add shader-based OpenGL backend
 - [ ] Add GPU resource lifecycle and capability reporting
 - [ ] Add basic terrain and avatar placeholders
