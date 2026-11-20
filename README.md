@@ -19,7 +19,7 @@ See [platform support policy](docs/development/platform-support.md).
 
 ## Current implementation
 
-The repository contains a C++20 application foundation, a tested world-state model, a renderer abstraction, a world-to-renderer bridge, a camera controller, CPU mesh data and primitive factories, a handle-based OpenGL GPU mesh registry, and an SDL3/OpenGL compatibility preview. The preview uploads validated vertex/index geometry to GPU VBO/IBO buffers through the registry and draws indexed triangles. It supports mouse orbit, pan, and zoom. It is an integration prototype, not yet a production 3D Viewer and does not connect to an OpenSim Grid or implement Firestorm-compatible networking.
+The repository contains a C++20 application foundation, a tested world-state model, a renderer abstraction, a world-to-renderer bridge, a camera controller, CPU mesh data and primitive factories, a handle-based OpenGL GPU mesh registry, and an SDL3/OpenGL compatibility preview. The preview uploads validated vertex/index geometry to GPU VBO/IBO buffers through the registry and draws indexed triangles. It optionally uses a GLSL 1.20 basic directional-light shader, with a fixed-function fallback, and supports mouse orbit, pan, and zoom. It is an integration prototype, not yet a production 3D Viewer and does not connect to an OpenSim Grid or implement Firestorm-compatible networking.
 
 ## Build
 
@@ -44,4 +44,4 @@ See [architecture overview](docs/architecture/overview.md), [renderer API](docs/
 
 ## Project status
 
-The project is under active early-stage development. The compatibility preview currently uses an OpenGLMeshRegistry with OpenGL 2.1 fixed-function client arrays and GPU VBO/IBO buffers. It does not yet use programmable shaders or PBR materials, upload textures, load arbitrary external mesh assets, render avatars or terrain, or connect to a live Grid. The non-owning CPU geometry pointer is a temporary bridge; production resource ownership will move into a renderer-managed mesh registry.
+The project is under active early-stage development. The compatibility preview currently uses an OpenGLMeshRegistry with GPU VBO/IBO buffers and an optional GLSL 1.20 basic lighting shader. It falls back to OpenGL 2.1 fixed-function rendering when GLSL is unavailable. It does not yet implement PBR materials, upload textures, load arbitrary external mesh assets, render avatars or terrain, or connect to a live Grid. The non-owning CPU geometry pointer is a temporary bridge; production CPU mesh ownership and creation will move fully behind the renderer API.
