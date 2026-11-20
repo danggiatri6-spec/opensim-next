@@ -41,8 +41,9 @@ void drawCube() {
 }
 
 void setProjection(int width, int height) {
+    const int safeWidth = std::max(width, 1);
     const int safeHeight = std::max(height, 1);
-    glViewport(0, 0, width, safeHeight);
+    glViewport(0, 0, safeWidth, safeHeight);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
