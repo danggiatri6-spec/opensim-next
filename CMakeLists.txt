@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.20)
-project(OpenSimNextViewer VERSION 0.1.0 LANGUAGES CXX)
+project(OpenSimNextViewer VERSION 0.1.0 LANGUAGES C CXX)
+
 option(OPENSIM_NEXT_BUILD_TESTS "Build unit tests" ON)
+option(OPENSIM_NEXT_ENABLE_SDL3 "Build the SDL3/OpenGL interactive preview" ON)
 
 add_library(opensim_next_core
   src/app/application.cpp
@@ -20,6 +22,28 @@ endif()
 
 add_executable(opensim-next-viewer src/main.cpp)
 target_link_libraries(opensim-next-viewer PRIVATE opensim_next_core)
+
+if(OPENSIM_NEXT_ENABLE_SDL3)
+  include(FetchContent)
+  set(SDL_TESTS OFF CACHE BOOL "" FORCE)
+  set(SDL_EXAMPLES OFF CACHE BOOL "" FORCE)
+  set(SDL_INSTALL_TESTS OFF CACHE BOOL "" FORCE)
+  set(SDL_DISABLE_INSTALL ON CACHE BOOL "" FORCE)
+  set(SDL_SHARED ON CACHE BOOL "" FORCE)
+  set(SDL_STATIC OFF CACHE BOOL "" FORCE)
+
+  FetchContent_Declare(
+    SDL3
+    GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
+    GIT_TAG release-3.4.20
+    GIT_SHALLOW TRUE
+  )
+  FetchContent_MakeAvailable(SDL3)
+
+  target_sources(opensim-next-viewer PRIVATE src/platform/preview_window.cpp)
+  target_link_libraries(opensim-next-viewer PRIVATE SDL3::SDL3)
+  target_compile_definitions(opensim-next-viewer PRIVATE OPENSIM_NEXT_ENABLE_SDL3=1)
+endif()
 
 if(OPENSIM_NEXT_BUILD_TESTS)
   enable_testing()
