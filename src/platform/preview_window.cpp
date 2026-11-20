@@ -6,6 +6,9 @@
 #include <algorithm>
 #include <cmath>
 #include <iostream>
+#include <cstddef>
+#include <cstdint>
+#include <unordered_map>
 
 namespace opensim_next::platform {
 namespace {
@@ -33,16 +36,99 @@ void applyCamera(const renderer::CameraState& c) {
     glMatrixMode(GL_MODELVIEW);
     glLoadMatrixd(view);
 }
-void drawMeshGeometry(const renderer::MeshData& mesh) {
-    glBegin(GL_TRIANGLES);
-    for (const std::uint32_t index : mesh.indices) {
-        const auto& vertex = mesh.vertices[index];
-        glNormal3fv(vertex.normal);
-        glTexCoord2fv(vertex.uv);
-        glVertex3fv(vertex.position);
+constexpr GLenum kArrayBuffer = 0x8892;
+constexpr GLenum kElementArrayBuffer = 0x8893;
+constexpr GLenum kStaticDraw = 0x88E4;
+
+using GenBuffersProc = void (APIENTRYP)(GLsizei, GLuint*);
+using DeleteBuffersProc = void (APIENTRYP)(GLsizei, const GLuint*);
+using BindBufferProc = void (APIENTRYP)(GLenum, GLuint);
+using BufferDataProc = void (APIENTRYP)(GLenum, std::ptrdiff_t, const void*, GLenum);
+
+struct OpenGLBufferFunctions {
+    GenBuffersProc* genBuffers{};
+    DeleteBuffersProc* deleteBuffers{};
+    BindBufferProc* bindBuffer{};
+    BufferDataProc* bufferData{};
+
+    [[nodiscard]] bool load() {
+        genBuffers = reinterpret_cast<GenBuffersProc*>(SDL_GL_GetProcAddress("glGenBuffers"));
+        deleteBuffers = reinterpret_cast<DeleteBuffersProc*>(SDL_GL_GetProcAddress("glDeleteBuffers"));
+        bindBuffer = reinterpret_cast<BindBufferProc*>(SDL_GL_GetProcAddress("glBindBuffer"));
+        bufferData = reinterpret_cast<BufferDataProc*>(SDL_GL_GetProcAddress("glBufferData"));
+        return genBuffers && deleteBuffers && bindBuffer && bufferData;
     }
-    glEnd();
-}
+};
+
+struct GpuMesh {
+    GLuint vertexBuffer{};
+    GLuint indexBuffer{};
+    GLsizei indexCount{};
+};
+
+class GpuMeshCache final {
+public:
+    explicit GpuMeshCache(OpenGLBufferFunctions& functions) : functions_(functions) {}
+
+    [[nodiscard]] bool draw(const renderer::MeshData& mesh) {
+        if (!mesh.isValid()) return false;
+        auto found = meshes_.find(&mesh);
+        if (found == meshes_.end()) {
+            GpuMesh gpu;
+            functions_.genBuffers(1, &gpu.vertexBuffer);
+            functions_.genBuffers(1, &gpu.indexBuffer);
+            if (gpu.vertexBuffer == 0 || gpu.indexBuffer == 0) {
+                release(gpu);
+                return false;
+            }
+            functions_.bindBuffer(kArrayBuffer, gpu.vertexBuffer);
+            functions_.bufferData(kArrayBuffer,
+                static_cast<std::ptrdiff_t>(mesh.vertices.size() * sizeof(renderer::MeshVertex)),
+                mesh.vertices.data(), kStaticDraw);
+            functions_.bindBuffer(kElementArrayBuffer, gpu.indexBuffer);
+            functions_.bufferData(kElementArrayBuffer,
+                static_cast<std::ptrdiff_t>(mesh.indices.size() * sizeof(std::uint32_t)),
+                mesh.indices.data(), kStaticDraw);
+            gpu.indexCount = static_cast<GLsizei>(mesh.indices.size());
+            found = meshes_.emplace(&mesh, gpu).first;
+        }
+
+        const GpuMesh& gpu = found->second;
+        functions_.bindBuffer(kArrayBuffer, gpu.vertexBuffer);
+        functions_.bindBuffer(kElementArrayBuffer, gpu.indexBuffer);
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glEnableClientState(GL_NORMAL_ARRAY);
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        constexpr GLsizei stride = static_cast<GLsizei>(sizeof(renderer::MeshVertex));
+        glVertexPointer(3, GL_FLOAT, stride,
+            reinterpret_cast<const void*>(offsetof(renderer::MeshVertex, position)));
+        glNormalPointer(GL_FLOAT, stride,
+            reinterpret_cast<const void*>(offsetof(renderer::MeshVertex, normal)));
+        glTexCoordPointer(2, GL_FLOAT, stride,
+            reinterpret_cast<const void*>(offsetof(renderer::MeshVertex, uv)));
+        glDrawElements(GL_TRIANGLES, gpu.indexCount, GL_UNSIGNED_INT, nullptr);
+        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+        glDisableClientState(GL_NORMAL_ARRAY);
+        glDisableClientState(GL_VERTEX_ARRAY);
+        functions_.bindBuffer(kArrayBuffer, 0);
+        functions_.bindBuffer(kElementArrayBuffer, 0);
+        return true;
+    }
+
+    void clear() {
+        for (auto& entry : meshes_) release(entry.second);
+        meshes_.clear();
+    }
+
+private:
+    void release(const GpuMesh& mesh) {
+        if (mesh.vertexBuffer != 0) functions_.deleteBuffers(1, &mesh.vertexBuffer);
+        if (mesh.indexBuffer != 0) functions_.deleteBuffers(1, &mesh.indexBuffer);
+    }
+
+    OpenGLBufferFunctions& functions_;
+    std::unordered_map<const renderer::MeshData*, GpuMesh> meshes_;
+};
 void drawUnitCube() {
     glBegin(GL_QUADS);
     glNormal3f(0,0,1);
@@ -68,7 +154,7 @@ void setProjection(int width,int height) {
     glFrustum(-halfWidth,halfWidth,-halfHeight,halfHeight,nearPlane,farPlane);
     glMatrixMode(GL_MODELVIEW);
 }
-void renderWorldItems(std::span<const renderer::DrawItem> items) {
+void renderWorldItems(std::span<const renderer::DrawItem> items, GpuMeshCache& meshCache) {
     for(const auto& item:items) {
         if(!item.mesh || !item.material) continue;
         glPushMatrix();
@@ -84,7 +170,7 @@ void renderWorldItems(std::span<const renderer::DrawItem> items) {
                   .35F+((hash>>8U)&255U)/510.0F,
                   .35F+(hash&255U)/510.0F);
         if (item.geometry && item.geometry->isValid()) {
-            drawMeshGeometry(*item.geometry);
+            (void)meshCache.draw(*item.geometry);
         } else {
             drawUnitCube();
         }
@@ -108,6 +194,12 @@ int PreviewWindow::run(std::span<const renderer::DrawItem> items,
     SDL_GLContext context=SDL_GL_CreateContext(window);
     if(!context) { std::cerr<<"OpenGL context creation failed: "<<SDL_GetError()<<'\n'; SDL_DestroyWindow(window); SDL_Quit(); return 1; }
     SDL_GL_SetSwapInterval(1);
+    OpenGLBufferFunctions bufferFunctions;
+    if (!bufferFunctions.load()) {
+        std::cerr << "OpenGL vertex-buffer functions are unavailable on this driver.\\n";
+        SDL_GL_DestroyContext(context); SDL_DestroyWindow(window); SDL_Quit(); return 1;
+    }
+    GpuMeshCache meshCache(bufferFunctions);
     glEnable(GL_DEPTH_TEST); glDisable(GL_CULL_FACE);
     glEnable(GL_LIGHTING); glEnable(GL_LIGHT0); glEnable(GL_COLOR_MATERIAL);
     const GLfloat light[]={4.0F,-5.0F,8.0F,0.0F};
@@ -136,9 +228,10 @@ int PreviewWindow::run(std::span<const renderer::DrawItem> items,
         glClearColor(.055F,.075F,.11F,1.0F);
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
         applyCamera(camera.cameraState());
-        renderWorldItems(items);
+        renderWorldItems(items, meshCache);
         SDL_GL_SwapWindow(window);
     }
+    meshCache.clear();
     SDL_GL_DestroyContext(context); SDL_DestroyWindow(window); SDL_Quit(); return 0;
 }
 } // namespace opensim_next::platform
