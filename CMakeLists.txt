@@ -48,6 +48,7 @@ if(OPENSIM_NEXT_ENABLE_SDL3)
   target_sources(opensim_next_core PRIVATE
     src/platform/preview_window.cpp
     src/renderer/opengl_mesh_registry.cpp
+    src/renderer/opengl_basic_shader.cpp
   )
   target_link_libraries(opensim_next_core PUBLIC SDL3::SDL3)
   target_compile_definitions(opensim_next_core PRIVATE OPENSIM_NEXT_ENABLE_SDL3=1)
