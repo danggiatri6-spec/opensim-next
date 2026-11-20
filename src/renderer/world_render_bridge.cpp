@@ -1,6 +1,8 @@
 #include "opensim_next/renderer/world_render_bridge.hpp"
+
 #include <algorithm>
 #include <unordered_map>
+
 namespace opensim_next::renderer {
 std::vector<DrawItem> WorldRenderBridge::buildDrawItems(
     const world::RegionState& region, std::span<const RenderBinding> bindings) {
@@ -17,11 +19,14 @@ std::vector<DrawItem> WorldRenderBridge::buildDrawItems(
     for (const auto& [entityId, object] : region.objects) {
         const auto binding = bindingByEntity.find(entityId);
         if (binding == bindingByEntity.end()) continue;
-        drawItems.push_back({entityId, binding->second->mesh, binding->second->material,
-                             object.transform, binding->second->geometry});
+        const auto& selected = *binding->second;
+        drawItems.push_back({entityId, selected.mesh, selected.material,
+                             object.transform, selected.geometry});
     }
     std::sort(drawItems.begin(), drawItems.end(),
-        [](const DrawItem& left, const DrawItem& right) { return left.entityId < right.entityId; });
+        [](const DrawItem& left, const DrawItem& right) {
+            return left.entityId < right.entityId;
+        });
     return drawItems;
 }
 } // namespace opensim_next::renderer
