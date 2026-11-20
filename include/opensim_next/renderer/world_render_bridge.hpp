@@ -7,18 +7,15 @@
 #include <vector>
 
 namespace opensim_next::renderer {
-
 struct RenderBinding {
     world::EntityId entityId{0};
     MeshHandle mesh{};
     MaterialHandle material{};
+    const MeshData* geometry{nullptr};
 };
-
 class WorldRenderBridge final {
 public:
     [[nodiscard]] static std::vector<DrawItem> buildDrawItems(
-        const world::RegionState& region,
-        std::span<const RenderBinding> bindings);
+        const world::RegionState& region, std::span<const RenderBinding> bindings);
 };
-
 } // namespace opensim_next::renderer
