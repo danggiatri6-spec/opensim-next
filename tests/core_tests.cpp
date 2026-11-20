@@ -1,9 +1,12 @@
 #include "opensim_next/app/application.hpp"
 #include "opensim_next/renderer/mock_renderer.hpp"
+#include "opensim_next/renderer/camera_controller.hpp"
 #include "opensim_next/renderer/world_render_bridge.hpp"
 #include "opensim_next/world/world_state.hpp"
 
 #include <cassert>
+#include <cmath>
+#include <limits>
 #include <string_view>
 
 int main() {
@@ -81,6 +84,32 @@ int main() {
     materialDescriptor.roughness = 0.7F;
     const auto material = renderer.createMaterial(materialDescriptor);
     assert(static_cast<bool>(material));
+
+    CameraController camera;
+    camera.setTarget({10.0, 20.0, 5.0});
+    camera.setDistance(12.0);
+    assert(camera.distance() == 12.0);
+    const auto initialCamera = camera.cameraState();
+    assert(initialCamera.up.z == 1.0);
+    assert(initialCamera.farClip > initialCamera.nearClip);
+    assert(initialCamera.position.x != camera.target().x
+        || initialCamera.position.y != camera.target().y
+        || initialCamera.position.z != camera.target().z);
+
+    camera.applyInput({0.25, 0.1, 0.0, 0.0, 0.0});
+    assert(camera.yawRadians() != -1.5707963267948966);
+    assert(camera.pitchRadians() > 0.35);
+    camera.applyInput({0.0, 0.0, 1.0, -0.5, 0.0});
+    assert(camera.target().x != 10.0 || camera.target().y != 20.0
+        || camera.target().z != 5.0);
+    camera.applyInput({0.0, 0.0, 0.0, 0.0, 1.0});
+    assert(camera.distance() < 12.0);
+    camera.setDistance(0.0);
+    assert(camera.distance() == 1.0);
+    camera.setDistance(10000.0);
+    assert(camera.distance() == 512.0);
+    camera.setTarget({std::numeric_limits<double>::quiet_NaN(), 0.0, 0.0});
+    assert(std::isfinite(camera.target().x));
 
     WorldState renderWorld;
     assert(renderWorld.addRegion({"render-region", "Render Test"}));
