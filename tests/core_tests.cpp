@@ -12,15 +12,23 @@ int main() {
 
     WorldState world;
     assert(world.regionCount() == 0);
-    assert(!world.addRegion({"", "Invalid"}));
-    assert(world.addRegion({"region-1", "Welcome Region"}));
-    assert(!world.addRegion({"region-1", "Duplicate"}));
+
+    const RegionDescriptor invalidRegion{"", "Invalid"};
+    const RegionDescriptor validRegion{"region-1", "Welcome Region"};
+    const RegionDescriptor duplicateRegion{"region-1", "Duplicate"};
+    assert(!world.addRegion(invalidRegion));
+    assert(world.addRegion(validRegion));
+    assert(!world.addRegion(duplicateRegion));
     assert(world.regionCount() == 1);
 
-    assert(!world.addObject("missing-region", {1, "Cube", {}}));
-    assert(!world.addObject("region-1", {0, "Invalid ID", {}}));
-    assert(world.addObject("region-1", {42, "Test Cube", {}}));
-    assert(!world.addObject("region-1", {42, "Duplicate Cube", {}}));
+    const WorldObject missingRegionObject{1, "Cube", {}};
+    const WorldObject invalidObject{0, "Invalid ID", {}};
+    const WorldObject object{42, "Test Cube", {}};
+    const WorldObject duplicateObject{42, "Duplicate Cube", {}};
+    assert(!world.addObject("missing-region", missingRegionObject));
+    assert(!world.addObject("region-1", invalidObject));
+    assert(world.addObject("region-1", object));
+    assert(!world.addObject("region-1", duplicateObject));
 
     Transform moved;
     moved.position = {10.0, 20.0, 3.0};
@@ -31,7 +39,8 @@ int main() {
     assert(region->objects.at(42).transform.position.x == 10.0);
     assert(region->objects.at(42).transform.position.y == 20.0);
 
-    assert(world.addAvatar("region-1", {7, "Resident", {}}));
+    const AvatarState avatar{7, "Resident", {}};
+    assert(world.addAvatar("region-1", avatar));
     assert(world.updateAvatarTransform("region-1", 7, moved));
     assert(world.findRegion("region-1")->avatars.at(7).transform.position.z == 3.0);
     assert(world.removeAvatar("region-1", 7));
