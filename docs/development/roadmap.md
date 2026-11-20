@@ -1,44 +1,34 @@
 # Development Roadmap
 
 ## Milestone 0 — Repository and build foundation
-- [x] Establish a standalone PC Viewer repository.
-- [x] Add a C++20/CMake bootstrap target.
-- [x] Add a small unit-test executable and CI workflow.
-- [ ] Record supported compiler versions and build artifacts.
-- [ ] Add formatting and static-analysis checks.
+- [x] CMake/C++20 project skeleton
+- [x] Windows and Ubuntu CI
+- [x] Core unit-test target
 
-## Milestone 1 — Protocol research
-- [ ] Pin a Firestorm release branch and record its upstream commit.
-- [ ] Inventory login, LLUDP, CAPS, asset transfer and region state paths.
-- [ ] Record LGPL and third-party dependency obligations before source import.
-- [ ] Define protocol characterization fixtures.
+## Milestone 1 — World and renderer foundations
+- [x] World Model for regions, objects, avatars, and transforms
+- [x] Renderer API and mock backend
+- [x] World-to-renderer bridge
+- [x] Camera controller
+- [x] SDL3 window and OpenGL compatibility context
+- [x] Visible preview driven by World Model draw items
+- [x] Camera orbit, pan, and zoom input
 
-## Milestone 2 — First client vertical slice
-- [ ] Grid selection and login.
-- [ ] Connect to one OpenSim region.
-- [ ] Receive terrain and basic object state.
-- [ ] Display one avatar and basic movement.
-- [ ] Local chat send/receive.
-- [ ] Clean disconnect and structured diagnostics.
+## Milestone 2 — Real graphics backend
+- [ ] Replace debug cube handles with vertex/index mesh resources
+- [ ] Add shader-based OpenGL backend
+- [ ] Add GPU resource lifecycle and capability reporting
+- [ ] Add basic terrain and avatar placeholders
+- [ ] Add frustum culling and simple LOD
 
-## Milestone 3 — Renderer abstraction
-- [x] Define renderer lifecycle and capability interfaces (mock backend contract).
-- [x] Add a backend-independent world-to-renderer bridge.
-- [x] Add a pure Z-up orbit camera controller.
-- [x] Submit a headless preview scene through the mock backend.
-- [x] Add an SDL3 window and basic event loop.
-- [x] Bring up an OpenGL 2.1 compatibility context and render a rotating test cube.
-- [ ] Connect World Model draw items and CameraController state to the visible renderer.
-- [ ] Replace fixed-function OpenGL preview code with a shader-based backend.
-- [ ] Compare Vulkan and wgpu with a small proof of concept.
-- [ ] Measure low-spec and modern hardware before choosing a backend.
+## Milestone 3 — Content and Grid integration
+- [ ] glTF 2.0 asset ingestion and cache
+- [ ] OpenSim login and region protocol research
+- [ ] Firestorm-compatible protocol adapter design
+- [ ] Live region/object state synchronization
 
-## Milestone 4 — Modern content and social experience
-- [ ] Legacy asset compatibility tests.
-- [ ] glTF/GLB import and PBR fallback.
-- [ ] Avatar skeleton/animation evolution.
-- [ ] User-controlled speech-to-text and optional translation.
-- [ ] AI-assisted creator tools with explicit user control.
-
-## Scope guardrails
-PC is the first complete client. Do not start a mobile 3D Viewer before the PC vertical slice works. Do not rewrite the server protocol to simplify client implementation. Do not claim feature completion based only on compiling the bootstrap shell.
+## Milestone 4 — Modern Viewer experience
+- [ ] Avatar rendering and animation
+- [ ] Modern inventory/build UI
+- [ ] Social and communication interface
+- [ ] Low/medium/high graphics profiles
