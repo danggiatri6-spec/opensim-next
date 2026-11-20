@@ -73,7 +73,6 @@ void renderWorldItems(std::span<const renderer::DrawItem> items) {
         glColor3f(.35F+((hash>>16U)&255U)/510.0F,
                   .35F+((hash>>8U)&255U)/510.0F,
                   .35F+(hash&255U)/510.0F);
-        renderWorldItems; // placeholder removed below
         drawUnitCube();
         glPopMatrix();
     }
