@@ -141,10 +141,10 @@ int main() {
     assert(renderWorld.addObject("render-region", {100, "First", firstTransform}));
 
     const RenderBinding renderBindings[]{
-        {200, mesh, material},
-        {100, mesh, material},
-        {300, mesh, material},
-        {400, MeshHandle{}, material}
+        {200, mesh, material, &cubeGeometry},
+        {100, mesh, material, &cubeGeometry},
+        {300, mesh, material, &cubeGeometry},
+        {400, MeshHandle{}, material, &cubeGeometry}
     };
     const auto* renderRegion = renderWorld.findRegion("render-region");
     assert(renderRegion != nullptr);
@@ -154,6 +154,15 @@ int main() {
     assert(bridgedDrawItems[1].entityId == 200);
     assert(bridgedDrawItems[0].transform.position.z == 3.0);
     assert(bridgedDrawItems[1].transform.position.x == 4.0);
+    assert(bridgedDrawItems[0].geometry == &cubeGeometry);
+    assert(bridgedDrawItems[1].geometry->indices.size() == 36);
+
+    auto invalidBoundGeometry = cubeGeometry;
+    invalidBoundGeometry.indices[0] = 9999;
+    const RenderBinding invalidGeometryBinding{100, mesh, material, &invalidBoundGeometry};
+    const auto rejectedGeometryItems = WorldRenderBridge::buildDrawItems(
+        *renderRegion, std::span<const RenderBinding>{&invalidGeometryBinding, 1});
+    assert(rejectedGeometryItems.empty());
 
     assert(renderer.renderFrame({CameraState{}, bridgedDrawItems}));
     assert(renderer.renderedFrameCount() == 1);
