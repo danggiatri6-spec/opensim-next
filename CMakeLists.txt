@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 project(OpenSimNextViewer VERSION 0.1.0 LANGUAGES CXX)
 option(OPENSIM_NEXT_BUILD_TESTS "Build unit tests" ON)
-add_library(opensim_next_core src/app/application.cpp)
+add_library(opensim_next_core\n  src/app/application.cpp\n  src/world/world_state.cpp\n)
 target_include_directories(opensim_next_core PUBLIC include)
 target_compile_features(opensim_next_core PUBLIC cxx_std_20)
 if(MSVC)
