@@ -1,4 +1,5 @@
 #include "opensim_next/app/application.hpp"
+#include "opensim_next/renderer/mock_renderer.hpp"
 #include "opensim_next/world/world_state.hpp"
 
 #include <cassert>
@@ -51,5 +52,55 @@ int main() {
     assert(world.removeRegion("region-1"));
     assert(world.findRegion("region-1") == nullptr);
     assert(world.regionCount() == 0);
+    using namespace opensim_next::renderer;
+
+    MockRenderer renderer;
+    assert(!renderer.isInitialized());
+    assert(!renderer.renderFrame({}));
+    assert(!renderer.initialize({0, 720, true}));
+    assert(renderer.initialize({1280, 720, true}));
+    assert(renderer.isInitialized());
+    assert(!renderer.initialize({1280, 720, true}));
+    assert(!renderer.resize(1280, 0));
+    assert(renderer.resize(1920, 1080));
+
+    const auto capabilities = renderer.capabilities();
+    assert(capabilities.maxTextureSize == 8192);
+    assert(capabilities.physicallyBasedMaterials);
+    assert(!capabilities.skeletalAnimation);
+
+    const auto mesh = renderer.createMesh("test-cube");
+    const auto texture = renderer.createTexture("test-albedo");
+    assert(static_cast<bool>(mesh));
+    assert(static_cast<bool>(texture));
+
+    MaterialDescriptor materialDescriptor;
+    materialDescriptor.baseColorTexture = texture;
+    materialDescriptor.metallic = 0.2F;
+    materialDescriptor.roughness = 0.7F;
+    const auto material = renderer.createMaterial(materialDescriptor);
+    assert(static_cast<bool>(material));
+
+    const DrawItem drawItem{99, mesh, material, {}};
+    const DrawItem drawItems[]{drawItem};
+    assert(renderer.renderFrame({CameraState{}, drawItems}));
+    assert(renderer.renderedFrameCount() == 1);
+    assert(renderer.lastDrawItemCount() == 1);
+
+    const auto invalidMaterial = renderer.createMaterial(
+        MaterialDescriptor{Color4{}, 0.0F, 1.5F, std::nullopt});
+    assert(!static_cast<bool>(invalidMaterial));
+
+    const DrawItem invalidDrawItem{100, MeshHandle{9999}, material, {}};
+    const DrawItem invalidDrawItems[]{invalidDrawItem};
+    assert(!renderer.renderFrame({CameraState{}, invalidDrawItems}));
+
+    renderer.destroyMaterial(material);
+    renderer.destroyTexture(texture);
+    renderer.destroyMesh(mesh);
+    assert(!renderer.renderFrame({CameraState{}, drawItems}));
+    renderer.shutdown();
+    assert(!renderer.isInitialized());
+    assert(renderer.capabilities().maxTextureSize == 0);
     return 0;
 }
