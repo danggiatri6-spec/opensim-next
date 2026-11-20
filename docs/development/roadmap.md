@@ -42,7 +42,7 @@ Ubuntu remains in CI as a portability smoke test; it is not a statement of equal
 - [ ] Establish repeatable build instructions and smoke-test automation
 - [ ] Record license, dependency and patch-provenance requirements
 
-See [Firestorm integration strategy](firestorm-integration.md), [baseline build audit](firestorm-baseline-audit.md), and [module reuse map](../architecture/firestorm-module-map.md).
+See [Firestorm integration strategy](firestorm-integration.md), [baseline build audit](firestorm-baseline-audit.md), [source bootstrap and Windows build steps](firestorm-source-bootstrap.md), and [module reuse map](../architecture/firestorm-module-map.md).
 
 ## Milestone 3 — OpenSim-next adapters and product integration
 - [ ] Add OpenSim-next product branding, onboarding and default Grid configuration
