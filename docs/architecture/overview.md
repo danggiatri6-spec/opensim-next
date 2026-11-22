@@ -36,7 +36,7 @@ The repository has a C++20 core, a world-state model, a backend-neutral renderer
 
 The standalone SDL3/OpenGL implementation is an architecture prototype, not a plan to recreate all Viewer functionality. Firestorm is the intended mature functional baseline. Its OpenSim-capable networking, world synchronization, avatars, inventory, assets, social systems, building tools and established rendering behavior should be reused first, then modernized behind adapters in small, testable steps. See [Firestorm integration strategy](../development/firestorm-integration.md).
 
-## Migration principles
+## Modern social-world experience direction\n\nOpenSim-next will selectively adopt modern social-world capabilities demonstrated by platforms such as VRChat—modern materials and lighting, richer avatar presentation, local secondary physics, permission-aware interaction, and improved creator UX—while preserving the Second Life/OpenSim ecosystem. This is an incremental Firestorm-derived Viewer evolution, not a Godot rewrite. LSL remains a compatibility requirement; any future C# extension must be independently designed and sandboxed. Visual-only avatar physics should normally run locally, while server authority remains responsible for shared state and permissions. All features must scale down for integrated graphics and 8 GB systems. See [modern virtual-world experience strategy](../development/modern-experience-strategy.md).\n\n## Migration principles
 
 - Keep protocol and renderer independent.
 - Preserve compatibility with existing OpenSim/Second Life content where practical.
