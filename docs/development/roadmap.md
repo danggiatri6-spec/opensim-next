@@ -57,6 +57,6 @@ See [Firestorm integration strategy](firestorm-integration.md).
 - [ ] Social and communication interface
 - [ ] Low/medium/high graphics profiles
 
-## Renderer integration progress
+## Milestone 5 — Modern social-world experience (strategic direction)\n- [ ] Complete Firestorm baseline integration and establish SL/OpenSim compatibility regression grids\n- [ ] Modernize materials and rendering incrementally (PBR, lighting, shadows, reflections) with legacy fallback and low-end profiles\n- [ ] Extend avatar presentation (expressions, gaze, lip-sync, gestures, IK) without breaking legacy skeletons, wearables, attachments, or animations\n- [ ] Prototype optional client-side hair/attachment secondary physics with strict performance budgets\n- [ ] Add permission-aware interaction primitives for contacts, triggers, and object interaction\n- [ ] Continue LSL/OSSL compatibility; evaluate sandboxed C# extensions and visual scripting only as later, separately gated capabilities\n- [ ] Modernize creator and social UX while keeping the 3D world viewport primary\n\nSee [modern virtual-world experience strategy](modern-experience-strategy.md).\n\n## Renderer integration progress
 
 The SDL3/OpenGL preview is an architecture prototype only. Firestorm integration is now a parallel priority: use Firestorm as the mature functional baseline and migrate OpenSim-next improvements incrementally rather than recreating the complete Viewer stack.
