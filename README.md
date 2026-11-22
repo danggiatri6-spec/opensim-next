@@ -15,7 +15,7 @@ Initial Viewer engineering-resource planning is Windows 75%, macOS 15%, and Linu
 
 Ubuntu CI is retained as a portability smoke test. It does not mean Linux has the same product priority or release commitment as Windows. macOS CI and full support are deferred until Phase 2.
 
-See [platform support policy](docs/development/platform-support.md).
+See [platform support policy](docs/development/platform-support.md) and the [modern virtual-world experience strategy](docs/development/modern-experience-strategy.md).
 
 ## Current implementation
 
