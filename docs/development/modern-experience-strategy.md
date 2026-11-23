@@ -6,6 +6,8 @@ OpenSim-next will adopt the strongest user-facing capabilities demonstrated by m
 
 **Core direction:** Second Life ecosystem compatibility as the foundation; modern social-world presentation and interaction as the experience target; ordinary-PC performance as a hard product constraint.
 
+**Platform delivery order:** Windows x64 is the sole initial build and test-package target. Linux and macOS builds are deferred until the Windows Viewer is reliably buildable, launches consistently, and produces a stable portable ZIP. Do not spend CI time or project effort on other desktop platforms during this first milestone.
+
 This strategy is an incremental evolution of the existing Firestorm-based Viewer plan. It does not authorize a full Viewer rewrite or a switch to a Godot-based production client.
 
 ## Non-negotiable principles
@@ -90,7 +92,7 @@ The experimental SDL3/OpenGL prototype remains a renderer/architecture research 
 
 The sequence below is a dependency-aware direction, not a promise that every item ships in one release. Work may overlap when interfaces and tests are stable.
 
-1. **Foundation and compatibility:** complete the Firestorm baseline integration and Windows build; establish SL/OpenSim regression grids, representative legacy avatars, wearables, attachments, scripted furniture, HUDs, AO, and building tests.
+1. **Foundation and compatibility:** complete the Firestorm baseline integration and Windows x64 build; validate launch and produce a stable portable ZIP before starting other desktop platforms; establish SL/OpenSim regression grids, representative legacy avatars, wearables, attachments, scripted furniture, HUDs, AO, and building tests.
 2. **Rendering fundamentals:** texture/material pipeline, shader material interface, resource lifecycle, batching, culling, LOD, and low-end profiling; then add PBR and selected lighting effects behind quality controls.
 3. **Avatar presentation:** audit skeleton/animation/appearance compatibility; add expression, gaze, lip-sync, gestures, and IK incrementally.
 4. **Local secondary physics:** prototype and profile hair/attachment motion, then add optional collision and consent-aware interactions.
